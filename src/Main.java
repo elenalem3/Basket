@@ -20,16 +20,19 @@ public class Main {
                     + (products[i - 1] == saleProducts3x2[i - 1] ? " (товар по акции 3 по цене 2) " : " (товар без акции) ") + " "
                     + prices[i - 1] + "руб/шт.");
         }
+        int selectCount = 0;
+        int selectProduct = 0;
+
         while (true) {
             System.out.println("\n☐ Выберите товар и количество или введите `end` ");
             try {
                 String input = scanner.nextLine();
                 if ("end".equals(input)) break; // выходим в случае набора текста end
                 addBasket = input.split(" "); // создаем массив, кладем туда строки раздельно до и после пробела
-                int selectProduct = Integer.parseInt(addBasket[0].trim());
-                int selectCount = Integer.parseInt(addBasket[1].trim());
-                if (selectProduct > (products.length) || (selectProduct == 0) || (selectCount == 0)) { // если выбранный товар больше списка товаров то
-                    System.out.println("⊠ ОШИБКА: Такого товара или количества не существует! Ваши вводные данные " + Arrays.toString(addBasket));
+                selectProduct = Integer.parseInt(addBasket[0].trim()); //номер продукта
+                selectCount = Integer.parseInt(addBasket[1].trim()); // количество продукта
+                if (selectProduct > (products.length) || (selectProduct == 0)) { // если выбранный товар больше списка товаров то
+                    System.out.println("⊠ ОШИБКА: Такого товара не существует! Ваши вводные данные " + Arrays.toString(addBasket));
                 } else if (Integer.parseInt(String.valueOf(addBasket.length)) == 2) {
                     mainBasket[selectProduct - 1] += (selectCount); // записываем в массив выбранный товар
                     System.out.println("☑ Товар '" + products[selectProduct - 1] + "' в количестве " + selectCount + " добавлен в корзину!");
@@ -43,6 +46,17 @@ public class Main {
                 System.out.println("⊠ ОШИБКА: Вы не выбрали товар и количество!");
                 continue;
             }
+            if (selectCount < 0) {
+                System.out.println("Товар " + products[selectProduct - 1] + " в корзине будет уменьшен на " + -selectCount + " шт.");
+                 if (mainBasket[selectProduct - 1] < 0) {
+                     mainBasket[selectProduct - 1] = 0;
+                 }
+            } else if (selectCount == 0) {
+                mainBasket[selectProduct - 1] = 0;
+                System.out.println("Этот товар был удален из корзины: " + products[selectProduct - 1]);
+                continue;
+            }
+            
         }
         scanner.close();
         System.out.println("\n☑ Ваша корзина составляет: ");
