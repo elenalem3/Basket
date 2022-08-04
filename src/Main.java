@@ -1,6 +1,9 @@
 import java.util.*; // можно java.util.*;
 
 public class Main {
+    private static String[] saleProducts3x2 = {null, "Яблоки", null}; // создание массива для продуктов к которым применима скидка.
+    private static int saleCountProduct3x2 = 3; // Количество товаров, на которое применяется скидка.
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String[] products = {"Хлеб", "Яблоки", "Молоко"}; // создание массива продукты.
@@ -8,10 +11,14 @@ public class Main {
         int[] mainBasket = new int[products.length]; // количество продуктов = список продуктов
         int[] prices = {100, 200, 300}; // создание массива цен.
         int sumProducts = 0; // итоговая суммы чека
+        int sumSale = 0; // итогова скидка по акциям.
 
         System.out.println("Список возможных товаров для покупки: ");
         for (int i = 1; i < products.length + 1; i++) { // Выводим список товаров и их цены.
-            System.out.println(i + ". " + products[i - 1] + " " + prices[i - 1] + "руб/шт.");
+            System.out.println(i + ". "
+                    + products[i - 1]
+                    + (products[i - 1] == saleProducts3x2[i - 1] ? " (товар по акции 3 по цене 2) " : " (товар без акции) ") + " "
+                    + prices[i - 1] + "руб/шт.");
         }
         int selectCount = 0;
         int selectProduct = 0;
@@ -55,11 +62,38 @@ public class Main {
         System.out.println("\n☑ Ваша корзина составляет: ");
         for (int i = 1; i < products.length + 1; i++) { // Выводим список выбранных товаров и их цены.
             if (mainBasket[i - 1] != 0) {
-                System.out.println(i + ". " + products[i - 1] + " - " + mainBasket[i - 1] + "шт., по " +
-                        prices[i - 1] + "руб/шт., на общую сумму: " + (mainBasket[i - 1] * prices[i - 1]));
+                System.out.println(i + ". "
+                        + products[i - 1] + " "
+                        + mainBasket[i - 1] + "шт., по "
+                        + prices[i - 1] + "руб/шт., на общую сумму: "
+                        + (products[i - 1] == saleProducts3x2[i - 1] && mainBasket[i - 1] >= saleCountProduct3x2
+                        ? (FinalSum(mainBasket[i - 1], prices[i - 1])) - Sale3x2(mainBasket[i - 1], products[i - 1], prices[i - 1])
+                        + " (товар по акции)" : (FinalSum(mainBasket[i - 1], prices[i - 1])) + " (товар без акции) "));
             }
-            sumProducts += mainBasket[i - 1] * prices[i - 1]; //общая сумма, выбранный товар умножаем на цену
+            sumSale += Sale3x2(mainBasket[i - 1], products[i - 1], prices[i - 1]);
+            sumProducts += FinalSum(mainBasket[i - 1], prices[i - 1]) - Sale3x2(mainBasket[i - 1], products[i - 1], prices[i - 1]);
         }
-        System.out.println("Итого: " + sumProducts);
+        System.out.println("Итого: "
+                + sumProducts
+                + "\nСкидка по акции: "
+                + sumSale);
     } // Main
+
+    public static int Sale3x2(int countProducts, String products, int prices) {
+        int sale = 0;
+
+        if (Arrays.asList(saleProducts3x2).indexOf(products) == 1) {
+            sale = (Integer.valueOf(countProducts) / saleCountProduct3x2) * prices;
+        } else {
+            sale = 0;
+        }
+        return sale;
+    }
+
+    public static int FinalSum(int countProduct, int pricesProduct) {
+        int sum = 0;
+
+        sum = countProduct * pricesProduct;
+        return sum;
+    }
 } // class Main
